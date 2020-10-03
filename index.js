@@ -1,20 +1,27 @@
 const express = require('express');
 const pgp = require('pg-promise')();
 
-const db = pgp({
-  host: 'localhost',
-  port: 5002,
-  database: 'emojidb',
-  user: 'admin',
-  password: 'admin',
-});
+let db = undefined;
+const initDb = async () => {
+  if (db) return db;
 
-db.query(`
-  CREATE TABLE IF NOT EXISTS emojis (
-    label TEXT NOT NULL PRIMARY KEY,
-    emoji TEXT NOT NULL
-  )
-`);
+  db = pgp({
+    host: 'localhost',
+    port: 5002,
+    database: 'emojidb',
+    user: 'admin',
+    password: 'admin',
+  });
+
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS emojis (
+      label TEXT NOT NULL PRIMARY KEY,
+      emoji TEXT NOT NULL
+    )
+  `);
+
+  return db;
+};
 
 const PORT = 4002;
 const app = express();
@@ -24,6 +31,7 @@ app.use(express.json());
 app.get('/emojis/:label', async (req, res) => {
   const { label } = req.params;
 
+  const db = await initDb();
   const emojis = await db.query(
     `SELECT * FROM emojis WHERE label = $<label> LIMIT 1`,
     { label },
@@ -36,6 +44,7 @@ app.post('/emojis/:label', async (req, res) => {
   const { body } = req;
   const { label } = req.params;
 
+  const db = await initDb();
   await db.query(
     `INSERT INTO emojis (label, emoji) VALUES ($<label>, $<emoji>) 
      ON CONFLICT (label) DO UPDATE SET emoji=$<emoji>`,
