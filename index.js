@@ -44,6 +44,8 @@ app.post('/emojis/:label', async (req, res) => {
   const { body } = req;
   const { label } = req.params;
 
+  console.log(`Creating emoji '${label}' with value: ${body.emoji}`);
+
   const db = await initDb();
   await db.query(
     `INSERT INTO emojis (label, emoji) VALUES ($<label>, $<emoji>) 

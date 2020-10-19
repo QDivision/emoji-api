@@ -5,10 +5,11 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "node index.js"
+    "start": "nodemon index.js"
   },
   "dependencies": {
     "express": "^4.17.1",
+    "nodemon": "^2.0.5",
     "pg-promise": "^10.6.1"
   }
 }
