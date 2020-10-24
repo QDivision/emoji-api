@@ -9,8 +9,8 @@ const initDb = async () => {
     host: 'localhost',
     port: 5002,
     database: 'emojidb',
-    user: 'admin',
-    password: 'admin',
+    user: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
   });
 
   await db.query(`
